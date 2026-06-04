@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Abhijeet Sengupta — AI & Security Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root{
+  --bg:#03060e;
+  --bg2:#070c18;
+  --bg3:#0b1120;
+  --card:#0e1525;
+  --card2:#121a2e;
+  --border:rgba(255,255,255,.06);
+  --border2:rgba(0,229,255,.15);
+  --cyan:#00e5ff;
+  --cyan2:#00b8d4;
+  --purple:#9d4edd;
+  --purple2:#7b2fbe;
+  --pink:#f72585;
+  --green:#00f5a0;
+  --amber:#ffbe0b;
+  --text:#e8eaf6;
+  --text2:#b0bec5;
+  --muted:#546e8a;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --ease-out-expo:cubic-bezier(.19,1,.22,1);
+  --ease-in-out:cubic-bezier(.76,0,.24,1);
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  line-height:1.7;
+  cursor:none;
+}
+body.loaded #loader{opacity:0;pointer-events:none;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--purple));}
+
+/* ═══════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════ */
+#cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--cyan);border-radius:50%;
+  pointer-events:none;z-index:10000;
+  top:0;left:0;
+  will-change:transform;
+  transition:width .2s,height .2s,background .2s;
+  mix-blend-mode:difference;
+}
+#cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(0,229,255,.5);
+  border-radius:50%;pointer-events:none;z-index:9999;
+  top:0;left:0;
+  will-change:transform;
+  transition:width .15s,height .15s,border-color .15s;
+}
+body:has(a:hover) #cursor,
+body:has(button:hover) #cursor{width:20px;height:20px;background:var(--purple);}
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring{width:52px;height:52px;border-color:var(--purple);}
+
+/* ═══════════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════════ */
+#loader{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2rem;
+  transition:opacity .8s var(--ease-out-expo) .2s;
+}
+.loader-logo{
+  font-family:var(--font-display);
+  font-size:4rem;font-weight:800;
+  letter-spacing:-.04em;
+  animation:glitch-load 2s steps(1) forwards;
+}
+.loader-logo .l-cyan{color:var(--cyan);}
+.loader-progress-wrap{
+  width:200px;height:2px;
+  background:var(--border);
+  border-radius:1px;overflow:hidden;
+}
+.loader-progress{
+  height:100%;width:0;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  border-radius:1px;
+  animation:load-progress 2.2s var(--ease-out-expo) forwards;
+}
+.loader-text{
+  font-family:var(--font-mono);
+  font-size:.7rem;color:var(--muted);
+  letter-spacing:.15em;text-transform:uppercase;
+  animation:blink .8s steps(1) infinite;
+}
+@keyframes load-progress{
+  0%{width:0;}
+  30%{width:40%;}
+  60%{width:70%;}
+  85%{width:90%;}
+  100%{width:100%;}
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes glitch-load{
+  0%{clip-path:inset(0 100% 0 0);}
+  10%{clip-path:inset(0 80% 0 0);}
+  20%{clip-path:inset(0 60% 0 0);}
+  30%{clip-path:inset(0 40% 0 0);}
+  40%{clip-path:inset(0 20% 0 0);}
+  50%,100%{clip-path:inset(0 0% 0 0);}
+}
+
+/* ═══════════════════════════════════════
+   BACKGROUND CANVAS & ORBS
+═══════════════════════════════════════ */
+#bg-canvas{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:0;opacity:.5;pointer-events:none;
+}
+.orb{
+  position:fixed;border-radius:50%;
+  filter:blur(140px);pointer-events:none;z-index:0;
+  animation:orb-drift 12s ease-in-out infinite alternate;
+}
+.orb1{width:700px;height:700px;background:rgba(0,229,255,.035);top:-250px;right:-250px;}
+.orb2{width:600px;height:600px;background:rgba(157,78,221,.03);bottom:-150px;left:-250px;animation-delay:-6s;}
+.orb3{width:400px;height:400px;background:rgba(247,37,133,.02);top:50%;left:50%;animation-delay:-3s;}
+@keyframes orb-drift{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(40px,30px) scale(1.1);}
+}
+
+/* ═══════════════════════════════════════
+   NOISE TEXTURE
+═══════════════════════════════════════ */
+body::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:200px;opacity:.4;
+}
+
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1.1rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(3,6,14,.75);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  transform:translateY(-100%);
+  animation:nav-enter .8s var(--ease-out-expo) 2.4s forwards;
+}
+@keyframes nav-enter{to{transform:translateY(0);}}
+.nav-logo{
+  font-family:var(--font-display);font-weight:800;
+  font-size:1.25rem;letter-spacing:-.03em;
+  text-decoration:none;color:var(--text);
+}
+.nav-logo .dot{color:var(--cyan);}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:.78rem;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;
+  transition:color .25s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-3px;left:0;
+  width:0;height:1px;background:var(--cyan);
+  transition:width .3s var(--ease-out-expo);
+}
+.nav-links a:hover{color:var(--cyan);}
+.nav-links a:hover::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:1.2rem;}
+.nav-counter{
+  font-family:var(--font-mono);font-size:.7rem;
+  color:var(--cyan);border:1px solid var(--border2);
+  padding:.35rem .9rem;border-radius:999px;
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(0,229,255,.04);
+}
+.counter-dot{
+  width:5px;height:5px;background:var(--cyan);
+  border-radius:50%;
+  box-shadow:0 0 6px var(--cyan);
+  animation:pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{opacity:1;box-shadow:0 0 6px var(--cyan);}
+  50%{opacity:.3;box-shadow:0 0 2px var(--cyan);}
+}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+#hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:7rem 3rem 5rem;
+  max-width:1280px;margin:0 auto;
+  gap:5rem;
+}
+.hero-left{flex:1;}
+.hero-tag{
+  font-family:var(--font-mono);font-size:.72rem;
+  color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:1.8rem;
+  display:inline-flex;align-items:center;gap:.8rem;
+  border:1px solid var(--border2);
+  padding:.4rem 1rem;border-radius:999px;
+  background:rgba(0,229,255,.04);
+  opacity:0;animation:fade-up .7s var(--ease-out-expo) 2.5s forwards;
+}
+.hero-tag-dot{
+  width:5px;height:5px;background:var(--cyan);
+  border-radius:50%;animation:pulse-glow 2s infinite;
+}
+.hero-name{
+  font-family:var(--font-display);
+  font-size:clamp(3.5rem,6.5vw,6rem);
+  font-weight:800;line-height:1.0;
+  letter-spacing:-.04em;
+  margin-bottom:.3rem;
+  overflow:hidden;
+}
+.hero-name .line{
+  display:block;
+  opacity:0;transform:translateY(100%);
+}
+.hero-name .line:nth-child(1){animation:line-enter .9s var(--ease-out-expo) 2.7s forwards;}
+.hero-name .line:nth-child(2){
+  animation:line-enter .9s var(--ease-out-expo) 2.9s forwards;
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--cyan);
+  filter:drop-shadow(0 0 20px rgba(0,229,255,.3));
+}
+@keyframes line-enter{to{opacity:1;transform:translateY(0);}}
+.hero-role-wrap{
+  margin:1.2rem 0 1.8rem;
+  font-family:var(--font-mono);font-size:1.05rem;
+  color:var(--muted);min-height:1.6rem;
+  opacity:0;animation:fade-up .7s var(--ease-out-expo) 3.1s forwards;
+}
+#typed{color:var(--cyan);}
+.cursor-blink{
+  display:inline-block;width:2px;height:1.1em;
+  background:var(--cyan);margin-left:2px;
+  vertical-align:middle;
+  animation:blink .7s steps(1) infinite;
+}
+.hero-desc{
+  font-size:1.05rem;color:var(--text2);
+  max-width:540px;line-height:1.9;
+  margin-bottom:2.5rem;
+  opacity:0;animation:fade-up .7s var(--ease-out-expo) 3.3s forwards;
+}
+.hero-desc strong{color:var(--text);}
+.hero-btns{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:fade-up .7s var(--ease-out-expo) 3.5s forwards;
+}
+.hero-social{
+  display:flex;gap:1rem;margin-top:2rem;
+  opacity:0;animation:fade-up .7s var(--ease-out-expo) 3.7s forwards;
+}
+.social-link{
+  width:38px;height:38px;border-radius:8px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);text-decoration:none;font-size:.85rem;
+  transition:all .3s;
+}
+.social-link:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.06);}
+@keyframes fade-up{to{opacity:1;transform:translateY(0);}from{opacity:0;transform:translateY(20px);}}
+
+/* HERO PHOTO */
+.hero-right{
+  flex-shrink:0;
+  opacity:0;
+  animation:photo-enter 1.2s var(--ease-out-expo) 3s forwards;
+}
+@keyframes photo-enter{
+  from{opacity:0;transform:translateX(40px);}
+  to{opacity:1;transform:translateX(0);}
+}
+.photo-container{position:relative;width:320px;}
+.photo-glow{
+  position:absolute;inset:-20px;
+  background:radial-gradient(ellipse,rgba(0,229,255,.12) 0%,transparent 70%);
+  border-radius:20px;
+  animation:glow-pulse 4s ease-in-out infinite;
+}
+@keyframes glow-pulse{
+  0%,100%{opacity:.6;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.05);}
+}
+.photo-frame{
+  width:100%;aspect-ratio:3/4;
+  border-radius:16px;overflow:hidden;
+  border:1px solid var(--border2);
+  position:relative;
+  background:var(--card);
+}
+.photo-frame img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.photo-frame::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,229,255,.08) 0%,transparent 60%,rgba(157,78,221,.05) 100%);
+  z-index:1;pointer-events:none;
+}
+.photo-frame::after{
+  content:'';position:absolute;
+  top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+  animation:shimmer 4s ease-in-out 4s infinite;
+  z-index:2;
+}
+@keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+.photo-corner{
+  position:absolute;width:20px;height:20px;
+  border-color:var(--cyan);border-style:solid;
+}
+.photo-corner.tl{top:-8px;left:-8px;border-width:2px 0 0 2px;}
+.photo-corner.tr{top:-8px;right:-8px;border-width:2px 2px 0 0;}
+.photo-corner.bl{bottom:-8px;left:-8px;border-width:0 0 2px 2px;}
+.photo-corner.br{bottom:-8px;right:-8px;border-width:0 2px 2px 0;}
+.photo-badge{
+  position:absolute;bottom:-16px;right:-16px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;padding:1rem 1.2rem;
+  font-family:var(--font-mono);font-size:.68rem;
+  color:var(--cyan);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.photo-badge .pb-label{display:block;color:var(--muted);font-size:.6rem;margin-bottom:.1rem;}
+.photo-stats{
+  position:absolute;top:-16px;left:-16px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:10px;padding:.8rem;
+  font-family:var(--font-mono);font-size:.65rem;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  display:flex;align-items:center;gap:.6rem;
+}
+.ps-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
+
+/* ═══════════════════════════════════════
+   SECTION GLOBALS
+═══════════════════════════════════════ */
+section{position:relative;z-index:1;}
+.section-inner{max-width:1280px;margin:0 auto;padding:7rem 3rem;}
+.section-label{
+  font-family:var(--font-mono);font-size:.72rem;
+  color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:.8rem;
+  display:flex;align-items:center;gap:.7rem;
+}
+.section-label::before{
+  content:'';width:28px;height:1px;
+  background:linear-gradient(90deg,var(--cyan),transparent);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(2.2rem,4vw,3.2rem);
+  font-weight:800;letter-spacing:-.03em;
+  margin-bottom:3.5rem;
+  line-height:1.1;
+}
+
+/* REVEAL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo);}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-left{opacity:0;transform:translateX(-32px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo);}
+.reveal-left.visible{opacity:1;transform:none;}
+.reveal-right{opacity:0;transform:translateX(32px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo);}
+.reveal-right.visible{opacity:1;transform:none;}
+
+/* ═══════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════ */
+#about{background:linear-gradient(180deg,transparent,rgba(7,12,24,.7) 30%,rgba(7,12,24,.7) 70%,transparent);}
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:start;}
+.about-text p{color:var(--text2);line-height:1.95;margin-bottom:1.3rem;font-size:1rem;}
+.about-text strong{color:var(--text);}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:2.5rem;}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.4rem 1.2rem;text-align:center;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;
+}
+.stat-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,229,255,.04),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.stat-card:hover::before{opacity:1;}
+.stat-num{
+  font-family:var(--font-display);font-size:2.2rem;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label{font-size:.78rem;color:var(--muted);margin-top:.2rem;}
+.skills-wrap{}
+.skill-cat{
+  font-family:var(--font-mono);font-size:.68rem;
+  color:var(--purple);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:1rem;margin-top:1.8rem;
+}
+.skill-cat:first-child{margin-top:0;}
+.skill-item{margin-bottom:1rem;}
+.skill-header{display:flex;justify-content:space-between;margin-bottom:.45rem;}
+.skill-name{font-size:.88rem;color:var(--text);font-weight:500;}
+.skill-pct{font-family:var(--font-mono);font-size:.75rem;color:var(--cyan);}
+.skill-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.skill-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  width:0;transition:width 1.4s var(--ease-out-expo);
+}
+
+/* ═══════════════════════════════════════
+   PROJECTS
+═══════════════════════════════════════ */
+#projects{}
+.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.project-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  transition:border-color .4s,transform .4s,box-shadow .4s;
+  position:relative;
+  display:flex;flex-direction:column;
+}
+.project-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.project-card:hover{
+  border-color:rgba(0,229,255,.2);
+  transform:translateY(-6px);
+  box-shadow:0 24px 80px rgba(0,0,0,.4),0 0 40px rgba(0,229,255,.04);
+}
+.project-card:hover::before{opacity:1;}
+.project-card.featured{
+  grid-column:span 1;
+  border-color:rgba(0,229,255,.12);
+  background:linear-gradient(135deg,var(--card),rgba(0,229,255,.02));
+}
+.project-header{
+  padding:1.8rem 1.8rem 1rem;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:1rem;
+}
+.project-icon-wrap{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+}
+.project-tags{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-end;}
+.project-tag{
+  font-family:var(--font-mono);font-size:.6rem;
+  color:var(--cyan);border:1px solid rgba(0,229,255,.2);
+  padding:.2rem .6rem;border-radius:999px;
+  letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(0,229,255,.04);
+}
+.project-body{padding:0 1.8rem 1.8rem;flex:1;display:flex;flex-direction:column;}
+.project-title{
+  font-family:var(--font-display);
+  font-size:1.15rem;font-weight:700;
+  margin-bottom:.7rem;line-height:1.3;
+}
+.project-desc{color:var(--text2);font-size:.88rem;line-height:1.85;margin-bottom:1.3rem;flex:1;}
+.project-tech{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem;}
+.tech-pill{
+  font-family:var(--font-mono);font-size:.62rem;
+  background:rgba(157,78,221,.08);
+  border:1px solid rgba(157,78,221,.15);
+  color:#c77dff;padding:.2rem .65rem;border-radius:999px;
+}
+.project-links{display:flex;gap:1rem;margin-top:auto;}
+.proj-link{
+  font-size:.8rem;color:var(--muted);
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:.35rem;
+  transition:color .2s;padding:.4rem 0;
+}
+.proj-link:hover{color:var(--cyan);}
+.proj-link svg{width:13px;height:13px;stroke-width:2;}
+
+/* ═══════════════════════════════════════
+   CERTIFICATES
+═══════════════════════════════════════ */
+#certificates{background:linear-gradient(180deg,transparent,rgba(7,12,24,.5),transparent);}
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;}
+.cert-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  transition:all .35s;cursor:pointer;
+  position:relative;
+}
+.cert-card::after{
+  content:'↗';position:absolute;top:12px;right:12px;
+  font-size:1rem;color:var(--cyan);
+  opacity:0;transition:opacity .3s;
+}
+.cert-card:hover{border-color:rgba(157,78,221,.3);transform:translateY(-4px);}
+.cert-card:hover::after{opacity:1;}
+.cert-thumb{
+  width:100%;height:150px;
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cert-thumb img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:top center;
+  transition:transform .4s var(--ease-out-expo);
+}
+.cert-card:hover .cert-thumb img{transform:scale(1.04);}
+
+.cert-info{padding:1.1rem 1.3rem;}
+.cert-title{
+  font-family:var(--font-display);
+  font-size:.92rem;font-weight:700;margin-bottom:.25rem;
+}
+.cert-issuer{font-size:.75rem;color:var(--muted);}
+.cert-reg{
+  font-family:var(--font-mono);font-size:.65rem;
+  color:var(--cyan);margin-top:.3rem;
+}
+
+/* ═══════════════════════════════════════
+   ML TOOLS
+═══════════════════════════════════════ */
+#ml-tools{background:linear-gradient(180deg,transparent,rgba(11,17,32,.8),transparent);}
+.ml-tabs{
+  display:flex;gap:.5rem;margin-bottom:2rem;
+  border-bottom:1px solid var(--border);
+  padding-bottom:1px;
+}
+.ml-tab{
+  font-family:var(--font-mono);font-size:.72rem;
+  padding:.7rem 1.4rem;border:none;
+  background:transparent;color:var(--muted);
+  cursor:none;transition:all .25s;
+  text-transform:uppercase;letter-spacing:.1em;
+  position:relative;border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.ml-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.ml-tab:hover:not(.active){color:var(--text2);}
+.ml-panel{display:none;}
+.ml-panel.active{display:block;animation:panel-in .4s var(--ease-out-expo);}
+@keyframes panel-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.ml-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;
+}
+.ml-subtitle{
+  font-size:.88rem;color:var(--muted);
+  margin-bottom:1.5rem;line-height:1.7;
+}
+.ml-input-group{display:flex;gap:.8rem;margin-bottom:1.2rem;}
+.ml-input{
+  flex:1;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;
+  padding:.85rem 1.2rem;color:var(--text);
+  font-family:var(--font-body);font-size:.92rem;
+  outline:none;transition:border-color .25s;
+  cursor:none;
+}
+.ml-input:focus{border-color:var(--cyan);}
+.ml-input::placeholder{color:var(--muted);}
+textarea.ml-input{resize:vertical;min-height:100px;}
+.ml-result{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:1.3rem;min-height:80px;
+  font-size:.88rem;color:var(--muted);
+  font-family:var(--font-mono);line-height:1.8;
+  transition:border-color .3s;
+}
+.ml-result.has-result{color:var(--text);border-color:var(--border2);}
+.sentiment-row{display:flex;align-items:center;gap:1rem;margin-top:.8rem;}
+.s-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.35rem .9rem;border-radius:999px;
+  font-family:var(--font-mono);font-size:.72rem;font-weight:600;
+}
+.s-positive{background:rgba(0,245,160,.08);border:1px solid rgba(0,245,160,.25);color:var(--green);}
+.s-neutral{background:rgba(84,110,138,.1);border:1px solid rgba(84,110,138,.3);color:var(--muted);}
+.s-negative{background:rgba(247,37,133,.08);border:1px solid rgba(247,37,133,.25);color:var(--pink);}
+.score-bar-wrap{flex:1;}
+.score-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:.3rem;}
+.score-fill{height:100%;border-radius:2px;transition:width 1s var(--ease-out-expo);}
+.chat-window{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:1.2rem;
+  max-height:280px;overflow-y:auto;
+  margin-bottom:1rem;
+  display:flex;flex-direction:column;gap:.8rem;
+}
+.chat-msg{
+  padding:.8rem 1.1rem;border-radius:10px;
+  font-size:.86rem;line-height:1.7;max-width:82%;
+}
+.chat-msg.user{
+  background:rgba(0,229,255,.07);
+  border:1px solid rgba(0,229,255,.12);
+  align-self:flex-end;color:var(--text);
+}
+.chat-msg.bot{
+  background:var(--card);border:1px solid var(--border);
+  align-self:flex-start;color:var(--text2);
+}
+.chat-msg.bot .bot-name{color:var(--cyan);font-weight:600;}
+.match-result-item{margin-bottom:1rem;}
+.match-label-row{
+  display:flex;justify-content:space-between;
+  font-size:.82rem;margin-bottom:.4rem;
+}
+.match-skill-name{color:var(--text);}
+.match-pct{font-family:var(--font-mono);font-size:.75rem;color:var(--cyan);}
+.match-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.match-fill{
+  height:100%;border-radius:3px;width:0;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  transition:width 1s var(--ease-out-expo);
+}
+
+/* ═══════════════════════════════════════
+   COMMENTS
+═══════════════════════════════════════ */
+#comments{background:linear-gradient(180deg,transparent,rgba(7,12,24,.6),transparent);}
+.comment-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+.comment-form-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;
+  position:sticky;top:6rem;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.form-group{display:flex;flex-direction:column;gap:.45rem;}
+.form-label{
+  font-family:var(--font-mono);font-size:.66rem;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.1em;
+}
+.form-input{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:.85rem 1.1rem;
+  color:var(--text);font-family:var(--font-body);
+  font-size:.92rem;outline:none;
+  transition:border-color .25s;width:100%;
+  cursor:none;
+}
+.form-input:focus{border-color:var(--cyan);}
+.form-input::placeholder{color:var(--muted);}
+textarea.form-input{resize:vertical;min-height:110px;}
+.submit-notice{
+  font-size:.75rem;color:var(--muted);
+  margin-top:.8rem;font-family:var(--font-mono);
+  text-align:center;
+}
+.comments-feed{display:flex;flex-direction:column;gap:1rem;}
+.comment-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.4rem;
+  animation:comment-enter .5s var(--ease-out-expo);
+  transition:border-color .3s;
+}
+.comment-item:hover{border-color:var(--border2);}
+@keyframes comment-enter{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.comment-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;}
+.comment-author{
+  font-family:var(--font-display);font-weight:700;
+  font-size:.92rem;
+}
+.comment-date{font-family:var(--font-mono);font-size:.65rem;color:var(--muted);}
+.comment-text{color:var(--text2);font-size:.88rem;line-height:1.75;}
+.comment-s-tag{
+  display:inline-block;margin-top:.7rem;
+  font-family:var(--font-mono);font-size:.62rem;
+  padding:.2rem .6rem;border-radius:999px;
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{
+  position:relative;z-index:1;
+  padding:3rem;
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.footer-name{
+  font-family:var(--font-display);font-weight:800;
+  font-size:1.1rem;letter-spacing:-.02em;
+  margin-bottom:.8rem;
+}
+.footer-links{
+  display:flex;justify-content:center;gap:2rem;
+  list-style:none;margin-bottom:1rem;
+}
+.footer-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:.82rem;transition:color .2s;
+}
+.footer-links a:hover{color:var(--cyan);}
+.footer-copy{font-size:.75rem;color:var(--muted);}
+.footer-copy span{color:var(--cyan);}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn-primary{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--cyan);color:#000;
+  padding:.85rem 2rem;border-radius:8px;
+  font-weight:700;font-size:.88rem;
+  font-family:var(--font-display);
+  letter-spacing:.02em;text-decoration:none;
+  border:none;cursor:none;
+  transition:all .3s var(--ease-out-expo);
+  position:relative;overflow:hidden;
+}
+.btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.btn-primary:hover{
+  background:var(--cyan2);
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(0,229,255,.3);
+}
+.btn-primary:hover::before{opacity:1;}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:.5rem;
+  border:1px solid var(--border);color:var(--text);
+  padding:.85rem 2rem;border-radius:8px;
+  font-size:.88rem;text-decoration:none;
+  transition:all .3s;cursor:none;background:transparent;
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.04);}
+.btn-ml{
+  background:var(--cyan);color:#000;border:none;
+  padding:.85rem 1.5rem;border-radius:8px;
+  font-weight:700;font-size:.82rem;cursor:none;
+  font-family:var(--font-display);white-space:nowrap;
+  transition:all .3s;
+}
+.btn-ml:hover{background:var(--cyan2);transform:translateY(-1px);}
+
+/* ═══════════════════════════════════════
+   SCROLLING MARQUEE
+═══════════════════════════════════════ */
+.marquee-section{
+  padding:2rem 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;background:rgba(7,12,24,.5);
+  position:relative;z-index:1;
+}
+.marquee-track{
+  display:flex;gap:0;
+  animation:marquee 25s linear infinite;
+  width:max-content;
+}
+.marquee-item{
+  white-space:nowrap;padding:0 2.5rem;
+  font-family:var(--font-mono);font-size:.75rem;
+  color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:1rem;
+}
+.marquee-item::after{content:'·';color:var(--cyan);}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%)}}
+
+/* ═══════════════════════════════════════
+   SECTION DIVIDER
+═══════════════════════════════════════ */
+.section-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:0 3rem;position:relative;z-index:1;
+}
+
+/* ═══════════════════════════════════════
+   CERTIFICATE LIGHTBOX
+═══════════════════════════════════════ */
+#cert-lightbox{
+  position:fixed;inset:0;z-index:5000;
+  background:rgba(3,6,14,.92);
+  backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s var(--ease-out-expo);
+  padding:2rem;
+}
+#cert-lightbox.open{
+  opacity:1;pointer-events:all;
+}
+.cert-lb-inner{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  max-width:820px;width:100%;
+  max-height:90vh;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transform:scale(.92) translateY(20px);
+  transition:transform .4s var(--ease-out-expo);
+  box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 60px rgba(0,229,255,.06);
+  position:relative;
+}
+#cert-lightbox.open .cert-lb-inner{
+  transform:scale(1) translateY(0);
+}
+.cert-lb-close{
+  position:absolute;top:1rem;right:1rem;z-index:10;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--border);
+  color:var(--muted);font-size:.9rem;
+  cursor:none;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.cert-lb-close:hover{background:rgba(247,37,133,.15);border-color:var(--pink);color:var(--pink);}
+.cert-lb-img-wrap{
+  position:relative;
+  background:var(--bg2);
+  min-height:300px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  flex:1;
+}
+#cert-lb-img{
+  max-width:100%;max-height:65vh;
+  object-fit:contain;
+  display:block;
+  transition:opacity .3s;
+}
+#cert-lb-img.loading{opacity:0;}
+.cert-lb-loader{
+  position:absolute;
+  font-family:var(--font-mono);font-size:.75rem;
+  color:var(--muted);letter-spacing:.1em;
+  animation:blink .8s steps(1) infinite;
+  display:none;
+}
+.cert-lb-loader.visible{display:block;}
+.cert-lb-info{
+  padding:1.4rem 1.8rem;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+}
+.cert-lb-title{
+  font-family:var(--font-display);
+  font-weight:700;font-size:1rem;
+}
+.cert-lb-issuer{
+  font-size:.8rem;color:var(--muted);
+  margin-top:.2rem;
+}
+.cert-lb-dl-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(0,229,255,.08);
+  border:1px solid var(--border2);
+  color:var(--cyan);
+  padding:.55rem 1.2rem;border-radius:8px;
+  font-size:.8rem;font-family:var(--font-mono);
+  text-decoration:none;
+  transition:all .25s;white-space:nowrap;
+}
+.cert-lb-dl-btn:hover{background:rgba(0,229,255,.15);transform:translateY(-1px);}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:900px){
+  #hero{flex-direction:column-reverse;padding:5rem 1.5rem 4rem;gap:2.5rem;}
+  .hero-right{align-self:center;}
+  .photo-container{width:260px;}
+  .about-grid,.projects-grid,.comment-layout{grid-template-columns:1fr;}
+  .section-inner{padding:5rem 1.5rem;}
+  nav{padding:1rem 1.5rem;}
+  .nav-links{display:none;}
+  .hero-name{font-size:3rem;}
+  .comment-form-card{position:static;}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">AS<span class="l-cyan">.</span></div>
+  <div class="loader-progress-wrap"><div class="loader-progress"></div></div>
+  <div class="loader-text">Initializing Systems...</div>
+</div>
+
+<!-- BACKGROUND -->
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">AS<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certificates">Certificates</a></li>
+    <li><a href="#ml-tools">AI Tools</a></li>
+    <li><a href="#comments">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-counter">
+      <span class="counter-dot"></span>
+      <span id="visitor-count">Loading...</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      Open to Opportunities
+    </div>
+    <h1 class="hero-name">
+      <span class="line">Abhijeet</span>
+      <span class="line">Sengupta</span>
+    </h1>
+    <div class="hero-role-wrap">
+      <span id="typed"></span><span class="cursor-blink"></span>
+    </div>
+    <p class="hero-desc">
+      MCA student building <strong>intelligent systems</strong> at the intersection of AI, quantum cryptography and secure software. Creator of a <strong>UK-registered cryptographic algorithm</strong> and multi-agent AI platforms that solve real-world problems.
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn-primary">View Projects →</a>
+      <a href="mailto:abhijeetsengupta30@gmail.com" class="btn-outline">Get in Touch</a>
+    </div>
+    <div class="hero-social">
+      <a href="https://www.linkedin.com/in/aviijit-sengupta-3714b125b/" target="_blank" class="social-link" title="LinkedIn">in</a>
+      <a href="mailto:abhijeetsengupta30@gmail.com" class="social-link" title="Email">@</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="photo-container">
+      <div class="photo-glow"></div>
+      <div class="photo-stats">
+        <span class="ps-dot"></span>
+        <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--muted)">Available for hire</span>
+      </div>
+      <div class="photo-frame">
+        <img src="images/profile.jpg" alt="Abhijeet Sengupta" onerror="this.parentElement.style.background='var(--card2)'"/>
+        <div class="photo-corner tl"></div>
+        <div class="photo-corner tr"></div>
+        <div class="photo-corner bl"></div>
+        <div class="photo-corner br"></div>
+      </div>
+      <div class="photo-badge">
+        MCA Candidate<span class="pb-label">BP Poddar Institute · Kolkata</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label reveal">Who I am</div>
+    <h2 class="section-title reveal">About Me</h2>
+    <div class="about-grid">
+      <div class="reveal-left">
+        <div class="about-text">
+          <p>I'm an <strong>MCA student</strong> at BP Poddar Institute of Management and Technology, Kolkata, with a deep passion for building systems that are both intelligent and secure.</p>
+          <p>My work spans <strong>multi-agent AI architectures</strong>, quantum cryptography, Android development, and full-stack engineering. I've built platforms integrating real-time data with autonomous decision-making, and designed a <strong>hybrid QKD-PQC cryptographic algorithm</strong> now registered as a UK Intellectual Property design.</p>
+          <p>I thrive at the edge of what's possible — combining academic rigour with hands-on engineering to solve problems that matter, particularly in the domains of <strong>personal safety and secure communication</strong>.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card"><div class="stat-num">2+</div><div class="stat-label">Major Projects</div></div>
+          <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">UK Registered Design</div></div>
+          <div class="stat-card"><div class="stat-num">8.10</div><div class="stat-label">BCA SGPA</div></div>
+          <div class="stat-card"><div class="stat-num">6+</div><div class="stat-label">Tech Stacks</div></div>
+        </div>
+      </div>
+      <div class="skills-wrap reveal-right">
+        <div class="skill-cat">AI & Machine Learning</div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Multi-Agent AI (LangGraph)</span><span class="skill-pct">85%</span></div><div class="skill-bar"><div class="skill-fill" data-width="85"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">TensorFlow Lite</span><span class="skill-pct">72%</span></div><div class="skill-bar"><div class="skill-fill" data-width="72"></div></div></div>
+        <div class="skill-cat">Languages</div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Python</span><span class="skill-pct">88%</span></div><div class="skill-bar"><div class="skill-fill" data-width="88"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">JavaScript</span><span class="skill-pct">80%</span></div><div class="skill-bar"><div class="skill-fill" data-width="80"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Java (Android)</span><span class="skill-pct">75%</span></div><div class="skill-bar"><div class="skill-fill" data-width="75"></div></div></div>
+        <div class="skill-cat">Specialized</div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Quantum Cryptography (Qiskit)</span><span class="skill-pct">82%</span></div><div class="skill-bar"><div class="skill-fill" data-width="82"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">Firebase / Cloud</span><span class="skill-pct">78%</span></div><div class="skill-bar"><div class="skill-fill" data-width="78"></div></div></div>
+        <div class="skill-item"><div class="skill-header"><span class="skill-name">PostgreSQL / MySQL</span><span class="skill-pct">76%</span></div><div class="skill-bar"><div class="skill-fill" data-width="76"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PROJECTS -->
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-label reveal">What I've built</div>
+    <h2 class="section-title reveal">Projects</h2>
+    <div class="projects-grid">
+
+      <!-- SURAKSHAAI -->
+      <div class="project-card featured reveal">
+        <div class="project-header">
+          <div class="project-icon-wrap">🛡️</div>
+          <div class="project-tags">
+            <span class="project-tag">AI</span>
+            <span class="project-tag">Android</span>
+            <span class="project-tag">Safety</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">SurakshaAI — Women Safety & Emergency Response</h3>
+          <p class="project-desc">An intelligent personal safety platform with multi-agent AI that proactively detects threats, triggers smart SOS with live location, collects evidence automatically, and provides real-time emotional and crisis support — reducing emergency response time through autonomous decision-making with minimal user interaction.</p>
+          <div class="project-tech">
+            <span class="tech-pill">Java / Android SDK</span>
+            <span class="tech-pill">TensorFlow Lite</span>
+            <span class="tech-pill">Claude API</span>
+            <span class="tech-pill">Groq API</span>
+            <span class="tech-pill">Firebase</span>
+            <span class="tech-pill">Google Maps</span>
+            <span class="tech-pill">Supabase</span>
+            <span class="tech-pill">WorkManager</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Modon-Mitra/Suraksha-AI" target="_blank" rel="noopener" class="proj-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUANTUM CRYPTOGRAPHY -->
+      <div class="project-card featured reveal" style="transition-delay:.1s">
+        <div class="project-header">
+          <div class="project-icon-wrap">⚛️</div>
+          <div class="project-tags">
+            <span class="project-tag">Quantum</span>
+            <span class="project-tag">Cryptography</span>
+            <span class="project-tag">UK Reg.</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Hybrid QKD–PQC Cryptographic Algorithm</h3>
+          <p class="project-desc">A novel hybrid cryptographic model integrating Quantum Key Distribution and Post-Quantum Cryptography to ensure secure communication in the quantum era. Simulated on Qiskit, evaluated against quantum and classical attack scenarios. Officially registered as UK Intellectual Property Design No: 6505034.</p>
+          <div class="project-tech">
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">Qiskit</span>
+            <span class="tech-pill">CRIQ</span>
+            <span class="tech-pill">QKD</span>
+            <span class="tech-pill">PQC</span>
+            <span class="tech-pill">Quantum Simulator</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Modon-Mitra/Quantum-cryptographic-algorithm-circuit-design" target="_blank" rel="noopener" class="proj-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              Algorithm
+            </a>
+            <a href="https://github.com/Modon-Mitra/WAN_Quantum_communication" target="_blank" rel="noopener" class="proj-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Visualization
+            </a>
+            <a href="javascript:void(0)" onclick="openCert('certificates/uk-registration.jpg','Certificate of Registration for a UK Design','UK Intellectual Property Office · Design No: 6505034 · Granted 20 Feb 2026')" class="proj-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              UK Certificate
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENERGY MANAGEMENT -->
+      <div class="project-card reveal" style="transition-delay:.2s">
+        <div class="project-header">
+          <div class="project-icon-wrap">⚡</div>
+          <div class="project-tags">
+            <span class="project-tag">LangGraph</span>
+            <span class="project-tag">Gemini</span>
+            <span class="project-tag">Web</span>
+          </div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Unified AI Energy Management System</h3>
+          <p class="project-desc">Web-based energy platform using a 6-agent LangGraph architecture with Gemini API — autonomously managing generation, storage, distribution, consumption, maintenance, and pricing with real-time weather and renewable energy data.</p>
+          <div class="project-tech">
+            <span class="tech-pill">LangGraph</span>
+            <span class="tech-pill">Gemini API</span>
+            <span class="tech-pill">Leaflet.js</span>
+            <span class="tech-pill">Tailwind CSS</span>
+            <span class="tech-pill">REST APIs</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/Sandipan76/Team-Alpha" target="_blank" rel="noopener" class="proj-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CERTIFICATES -->
+<section id="certificates">
+  <div class="section-inner">
+    <div class="section-label reveal">Credentials</div>
+    <h2 class="section-title reveal">Certificates</h2>
+    <div class="cert-grid">
+
+  <div class="cert-card reveal" onclick="openCert('certificates/uk-registration.jpg','Certificate of Registration for a UK Design','UK Intellectual Property Office · Design No: 6505034 · Granted 20 Feb 2026')">
+    <div class="cert-thumb">
+      <img src="certificates/uk-registration.jpg" alt="UK Design Certificate"/>
+      <div class="cert-thumb-overlay"></div>
+    </div>
+    <div class="cert-info">
+      <div class="cert-title">UK Registered Design</div>
+      <div class="cert-issuer">UK Intellectual Property Office</div>
+      <div class="cert-reg">Design No: 6505034 · Feb 2026</div>
+    </div>
+  </div>
+
+  <div class="cert-card reveal" style="transition-delay:.1s" onclick="openCert('certificates/nptel-elite.jpg','NPTEL Elite Certificate — Business Intelligence & Analytics','IIT Madras · SWAYAM · Jan–Apr 2026 · Score: 68%')">
+    <div class="cert-thumb">
+      <img src="certificates/nptel-elite.jpg" alt="NPTEL Certificate"/>
+      <div class="cert-thumb-overlay"></div>
+    </div>
+    <div class="cert-info">
+      <div class="cert-title">NPTEL Elite — Business Intelligence & Analytics</div>
+      <div class="cert-issuer">IIT Madras · SWAYAM · Govt. of India</div>
+      <div class="cert-reg">Score: 68% · Jan–Apr 2026</div>
+    </div>
+  </div>
+
+  <div class="cert-card reveal" style="transition-delay:.2s" onclick="">
+    <div class="cert-thumb"><div class="cert-thumb-overlay"></div>➕</div>
+    <div class="cert-info">
+      <div class="cert-title">More Coming Soon</div>
+      <div class="cert-issuer">Add future certificates here</div>
+      <div class="cert-reg">Drop image → update onclick</div>
+    </div>
+  </div>
+
+</div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ML TOOLS -->
+<section id="ml-tools">
+  <div class="section-inner">
+    <div class="section-label reveal">Integrated AI</div>
+    <h2 class="section-title reveal">Live ML Tools</h2>
+    <div class="ml-tabs reveal">
+      <button class="ml-tab active" onclick="switchTab('skill')">🎯 Skill Matcher</button>
+      <button class="ml-tab" onclick="switchTab('sentiment')">💬 Sentiment Analyzer</button>
+      <button class="ml-tab" onclick="switchTab('chat')">🤖 Ask Abhijeet</button>
+    </div>
+
+    <!-- SKILL MATCHER -->
+    <div class="ml-panel active reveal" id="panel-skill">
+      <div class="ml-card">
+        <p class="ml-subtitle">Type a job role and the AI will analyze how well Abhijeet's skills match it, with a breakdown by category.</p>
+        <div class="ml-input-group">
+          <input class="ml-input" id="skill-input" type="text" placeholder="e.g. AI Engineer, Cybersecurity Analyst, Backend Developer..." onkeydown="if(event.key==='Enter')runSkillMatch()"/>
+          <button class="btn-ml" onclick="runSkillMatch()">Match →</button>
+        </div>
+        <div class="ml-result" id="skill-result">Results will appear here after you enter a role above...</div>
+      </div>
+    </div>
+
+    <!-- SENTIMENT ANALYZER -->
+    <div class="ml-panel" id="panel-sentiment">
+      <div class="ml-card">
+        <p class="ml-subtitle">Enter any text — a comment, review, or message — and the model will analyze its emotional tone.</p>
+        <div class="ml-input-group">
+          <input class="ml-input" id="sentiment-input" type="text" placeholder="Type any feedback or message to analyze..." onkeydown="if(event.key==='Enter')runSentiment()"/>
+          <button class="btn-ml" onclick="runSentiment()">Analyze →</button>
+        </div>
+        <div class="ml-result" id="sentiment-result">Sentiment result will appear here...</div>
+      </div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div class="ml-panel" id="panel-chat">
+      <div class="ml-card">
+        <p class="ml-subtitle">Ask me anything about Abhijeet — his background, projects, skills, or interests.</p>
+        <div class="chat-window" id="chat-messages">
+          <div class="chat-msg bot"><span class="bot-name">Abhijeet AI: </span>Hi! I'm trained on Abhijeet's portfolio. Ask me about his skills, projects, or background!</div>
+        </div>
+        <div class="ml-input-group">
+          <input class="ml-input" id="chat-input" type="text" placeholder="What projects has Abhijeet built?..." onkeydown="if(event.key==='Enter')sendChat()"/>
+          <button class="btn-ml" onclick="sendChat()">Send →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- COMMENTS -->
+<section id="comments">
+  <div class="section-inner">
+    <div class="section-label reveal">Say hello</div>
+    <h2 class="section-title reveal">Leave a Message</h2>
+    <div class="comment-layout">
+      <div class="comment-form-card reveal-left">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name *</label>
+            <input class="form-input" id="c-name" type="text" placeholder="John Doe"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email (optional)</label>
+            <input class="form-input" id="c-email" type="email" placeholder="john@example.com"/>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1.2rem;">
+          <label class="form-label">Message *</label>
+          <textarea class="form-input" id="c-message" placeholder="Share your thoughts, feedback, or just say hi!"></textarea>
+        </div>
+        <button class="btn-primary" onclick="submitComment()" style="width:100%;justify-content:center;">Send Message →</button>
+        <p class="submit-notice" id="form-notice"></p>
+      </div>
+      <div class="comments-feed reveal-right" id="comments-list">
+        <p style="color:var(--muted);font-size:.88rem;">Loading messages...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Abhijeet Sengupta<span style="color:var(--cyan)">.</span></div>
+  <ul class="footer-links">
+    <li><a href="mailto:abhijeetsengupta30@gmail.com">abhijeetsengupta30@gmail.com</a></li>
+    <li><a href="tel:+918583879579">+91 85838 79579</a></li>
+    <li><a href="https://www.linkedin.com/in/aviijit-sengupta-3714b125b/" target="_blank">LinkedIn</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 Abhijeet Sengupta · Built with <span>FastAPI + PostgreSQL</span> · Kolkata, India</p>
+</footer>
+
+<!-- ═══ CERTIFICATE LIGHTBOX ═══ -->
+<div id="cert-lightbox" onclick="closeCert()">
+  <div class="cert-lb-inner" onclick="event.stopPropagation()">
+    <button class="cert-lb-close" onclick="closeCert()">✕</button>
+    <div class="cert-lb-img-wrap" id="cert-lb-img-wrap">
+      <img id="cert-lb-img" src="" alt="Certificate"/>
+      <div class="cert-lb-loader" id="cert-lb-loader">Loading...</div>
+    </div>
+    <div class="cert-lb-info">
+      <div>
+        <div class="cert-lb-title" id="cert-lb-title"></div>
+        <div class="cert-lb-issuer" id="cert-lb-issuer"></div>
+      </div>
+      <a id="cert-lb-download" href="#" download class="cert-lb-dl-btn">⬇ Download</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── CONSTANTS ── */
+const API = 'http://localhost:8000/api';
+
+/* ══════════════════════════════════
+   CURSOR
+══════════════════════════════════ */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove',e=>{
+  cursor.style.transform=`translate(${e.clientX-5}px,${e.clientY-5}px)`;
+  ring.style.transform=`translate(${e.clientX-18}px,${e.clientY-18}px)`;
+},{passive:true});
+
+/* ══════════════════════════════════
+   LOADER
+══════════════════════════════════ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.body.classList.add('loaded');
+  },2400);
+});
+
+/* ══════════════════════════════════
+   PARTICLE CANVAS
+══════════════════════════════════ */
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resizeCanvas(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+for(let i=0;i<70;i++){
+  particles.push({
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight,
+    vx:(Math.random()-.5)*.25,
+    vy:(Math.random()-.5)*.25,
+    r:Math.random()*1.2+.4,
+    o:Math.random()*.6+.2
+  });
+}
+function drawParticles(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1;
+    if(p.y<0||p.y>H)p.vy*=-1;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(0,229,255,${p.o})`;
+    ctx.fill();
+  });
+  particles.forEach((a,i)=>{
+    for(let j=i+1;j<particles.length;j++){
+      const b=particles[j];
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<130){
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(0,229,255,${.12*(1-d/130)})`;
+        ctx.lineWidth=.4;ctx.stroke();
+      }
+    }
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ══════════════════════════════════
+   MARQUEE
+══════════════════════════════════ */
+const marqueeItems=['Python','Multi-Agent AI','Quantum Cryptography','LangGraph','Android Dev','Qiskit','TensorFlow Lite','Firebase','FastAPI','PostgreSQL','Claude API','Groq API','Google Maps','Supabase','Tailwind CSS'];
+const track=document.getElementById('marquee-track');
+const doubled=[...marqueeItems,...marqueeItems];
+track.innerHTML=doubled.map(t=>`<span class="marquee-item">${t}</span>`).join('');
+
+/* ══════════════════════════════════
+   TYPED TEXT
+══════════════════════════════════ */
+const roles=['AI Systems Developer','Quantum Cryptographer','Multi-Agent Architect','Security Engineer','Android Developer'];
+let ri=0,ci=0,del=false;
+function type(){
+  const el=document.getElementById('typed');
+  if(!el)return;
+  const role=roles[ri];
+  if(!del){
+    el.textContent=role.slice(0,++ci);
+    if(ci===role.length){del=true;setTimeout(type,1800);return;}
+  } else {
+    el.textContent=role.slice(0,--ci);
+    if(ci===0){del=false;ri=(ri+1)%roles.length;}
+  }
+  setTimeout(type,del?55:100);
+}
+setTimeout(type,2800);
+
+/* ══════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════ */
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      const delay=e.target.dataset.delay||0;
+      e.target.style.transitionDelay=delay+'ms';
+    }
+  });
+},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>revealObs.observe(el));
+
+/* ══════════════════════════════════
+   SKILL BARS
+══════════════════════════════════ */
+const barObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.skill-fill').forEach((f,i)=>{
+        setTimeout(()=>{f.style.width=f.dataset.width+'%';},i*80);
+      });
+      barObs.unobserve(e.target);
+    }
+  });
+},{threshold:.2});
+document.querySelectorAll('.skills-wrap').forEach(el=>barObs.observe(el));
+
+/* ══════════════════════════════════
+   VISITOR COUNT
+══════════════════════════════════ */
+async function loadVisitorCount(){
+  try{
+    await fetch(`${API}/visitors/log`,{method:'POST'});
+    const r=await fetch(`${API}/visitors/count`);
+    const d=await r.json();
+    document.getElementById('visitor-count').textContent=`${d.total_visitors} visitors`;
+  }catch(e){
+    document.getElementById('visitor-count').textContent='Live';
+  }
+}
+loadVisitorCount();
+
+/* ══════════════════════════════════
+   ML TABS
+══════════════════════════════════ */
+function switchTab(id){
+  const tabs=document.querySelectorAll('.ml-tab');
+  const ids=['skill','sentiment','chat'];
+  tabs.forEach((t,i)=>t.classList.toggle('active',ids[i]===id));
+  document.querySelectorAll('.ml-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+/* ══════════════════════════════════
+   SKILL MATCH
+══════════════════════════════════ */
+async function runSkillMatch(){
+  const q=document.getElementById('skill-input').value.trim();
+  if(!q)return;
+  const el=document.getElementById('skill-result');
+  el.innerHTML='<span style="color:var(--muted)">Analyzing match...</span>';
+  try{
+    const r=await fetch(`${API}/ml/skill-match`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_role:q})});
+    const d=await r.json();
+    if(d.matches){
+      el.classList.add('has-result');
+      el.innerHTML=`<div style="color:var(--cyan);margin-bottom:1rem;font-size:.8rem;">Match for: <strong style="color:var(--text)">${q}</strong></div>`+
+        d.matches.map(m=>`
+          <div class="match-result-item">
+            <div class="match-label-row"><span class="match-skill-name">${m.skill}</span><span class="match-pct">${m.score}%</span></div>
+            <div class="match-bar"><div class="match-fill" style="width:${m.score}%"></div></div>
+          </div>`).join('');
+    } else {
+      el.innerHTML=`<span style="color:var(--muted)">${d.result||'ML model training in progress. Check back soon!'}</span>`;
+    }
+  }catch(e){
+    el.innerHTML='<span style="color:var(--muted)">Backend not reachable. Start the server first!</span>';
+  }
+}
+
+/* ══════════════════════════════════
+   SENTIMENT
+══════════════════════════════════ */
+async function runSentiment(){
+  const q=document.getElementById('sentiment-input').value.trim();
+  if(!q)return;
+  const el=document.getElementById('sentiment-result');
+  el.innerHTML='<span style="color:var(--muted)">Analyzing sentiment...</span>';
+  try{
+    const r=await fetch(`${API}/ml/sentiment`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:q})});
+    const d=await r.json();
+    const cls=d.sentiment==='Positive'?'s-positive':d.sentiment==='Negative'?'s-negative':'s-neutral';
+    const icon=d.sentiment==='Positive'?'✓':d.sentiment==='Negative'?'✗':'~';
+    const pct=d.score?Math.round(d.score*100):0;
+    const fillColor=d.sentiment==='Positive'?'var(--green)':d.sentiment==='Negative'?'var(--pink)':'var(--muted)';
+    el.classList.add('has-result');
+    el.innerHTML=`
+      <div style="margin-bottom:.8rem;color:var(--text2);font-family:var(--font-body);">"${q}"</div>
+      <div class="sentiment-row">
+        <span class="s-badge ${cls}">${icon} ${d.sentiment||'Neutral'}</span>
+        ${pct?`<div class="score-bar-wrap"><div style="font-size:.7rem;color:var(--muted)">Confidence: ${pct}%</div><div class="score-bar"><div class="score-fill" style="width:${pct}%;background:${fillColor}"></div></div></div>`:''}
+      </div>`;
+  }catch(e){
+    el.innerHTML='<span style="color:var(--muted)">ML model coming in Phase 4!</span>';
+  }
+}
+
+/* ══════════════════════════════════
+   CHATBOT
+══════════════════════════════════ */
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const q=input.value.trim();
+  if(!q)return;
+  const msgs=document.getElementById('chat-messages');
+  msgs.innerHTML+=`<div class="chat-msg user">${q}</div>`;
+  input.value='';
+  msgs.scrollTop=msgs.scrollHeight;
+  const thinking=document.createElement('div');
+  thinking.className='chat-msg bot';
+  thinking.innerHTML='<span class="bot-name">Abhijeet AI: </span><span style="color:var(--muted)">Thinking...</span>';
+  msgs.appendChild(thinking);
+  msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const r=await fetch(`${API}/ml/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})});
+    const d=await r.json();
+    thinking.innerHTML=`<span class="bot-name">Abhijeet AI: </span>${d.answer}`;
+  }catch(e){
+    thinking.innerHTML='<span class="bot-name">Abhijeet AI: </span>I\'m still being trained! Phase 5 will bring me to life.';
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+/* ══════════════════════════════════
+   COMMENTS
+══════════════════════════════════ */
+async function submitComment(){
+  const name=document.getElementById('c-name').value.trim();
+  const email=document.getElementById('c-email').value.trim();
+  const message=document.getElementById('c-message').value.trim();
+  const notice=document.getElementById('form-notice');
+  if(!name||!message){notice.style.color='var(--pink)';notice.textContent='Please fill in name and message.';return;}
+  notice.style.color='var(--muted)';notice.textContent='Sending...';
+  try{
+    await fetch(`${API}/comments/add`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,message})});
+    document.getElementById('c-name').value='';
+    document.getElementById('c-email').value='';
+    document.getElementById('c-message').value='';
+    notice.style.color='var(--green)';notice.textContent='Message sent! Thank you ✓';
+    setTimeout(()=>notice.textContent='',3000);
+    loadComments();
+  }catch(e){
+    notice.style.color='var(--pink)';notice.textContent='Could not send. Error in backend.';
+  }
+}
+
+async function loadComments(){
+  const list=document.getElementById('comments-list');
+  try{
+    const r=await fetch(`${API}/comments/all`);
+    const comments=await r.json();
+    if(!Array.isArray(comments)||!comments.length){
+      list.innerHTML='<p style="color:var(--muted);font-size:.88rem;text-align:center;padding:2rem 0;">No messages yet — be the first!</p>';
+      return;
+    }
+    const sentClass=s=>s==='Positive'?'s-positive':s==='Negative'?'s-negative':'s-neutral';
+    list.innerHTML=comments.map(c=>`
+      <div class="comment-item">
+        <div class="comment-meta">
+          <span class="comment-author">${c.name}</span>
+          <span class="comment-date">${new Date(c.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>
+        </div>
+        <div class="comment-text">${c.message}</div>
+        ${c.sentiment&&c.sentiment!=='Pending'?`<span class="comment-s-tag s-badge ${sentClass(c.sentiment)}">${c.sentiment}</span>`:''}
+      </div>`).join('');
+  }catch(e){
+    list.innerHTML='<p style="color:var(--muted);font-size:.88rem;text-align:center;padding:2rem 0;">Your message will show here.</p>';
+  }
+}
+loadComments();
+
+/* ══════════════════════════════════
+   CLICK TRACKING + NAV (single observer)
+══════════════════════════════════ */
+const sections=['hero','about','projects','certificates','ml-tools','comments'];
+const dwellStart={};
+const navLinks=document.querySelectorAll('.nav-links a');
+
+const masterObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    const id = e.target.id;
+    if(e.isIntersecting){
+      // nav highlight
+      navLinks.forEach(a=>a.style.color='');
+      const active=document.querySelector(`.nav-links a[href="#${id}"]`);
+      if(active) active.style.color='var(--cyan)';
+      // dwell start
+      dwellStart[id]=Date.now();
+    } else if(dwellStart[id]){
+      const dwell=(Date.now()-dwellStart[id])/1000;
+      if(dwell>1.5) fetch(`${API}/clicks/log`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({section:id,dwell_seconds:dwell})}).catch(()=>{});
+      delete dwellStart[id];
+    }
+  });
+},{threshold:.3});
+
+sections.forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) masterObs.observe(el);
+});
+
+/* ══════════════════════════════════
+   CERTIFICATE LIGHTBOX
+══════════════════════════════════ */
+function openCert(src, title, issuer){
+  const lb = document.getElementById('cert-lightbox');
+  const img = document.getElementById('cert-lb-img');
+  const loader = document.getElementById('cert-lb-loader');
+  document.getElementById('cert-lb-title').textContent = title || '';
+  document.getElementById('cert-lb-issuer').textContent = issuer || '';
+  document.getElementById('cert-lb-download').href = src;
+
+  img.classList.add('loading');
+  loader.classList.add('visible');
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Reset handlers + clear old errors before loading new cert
+  img.onload = null;
+  img.onerror = null;
+  img.src = '';
+  document.querySelectorAll('.cert-err').forEach(el=>el.remove());
+
+  img.onload = () => {
+    img.classList.remove('loading');
+    loader.classList.remove('visible');
+  };
+  img.onerror = () => {
+    img.onerror = null; // stop loop
+    img.onload = null;
+    loader.classList.remove('visible');
+    img.classList.remove('loading');
+    const wrap = document.getElementById('cert-lb-img-wrap');
+    if(wrap && !wrap.querySelector('.cert-err')){
+      wrap.insertAdjacentHTML('beforeend',
+        `<div class="cert-err" style="position:absolute;color:var(--muted);
+          font-family:var(--font-mono);font-size:.8rem;text-align:center;padding:2rem;">
+          Image not found.<br>
+          <span style="font-size:.7rem;opacity:.6">Check frontend/certificates/ folder</span>
+        </div>`);
+    }
+  };
+  img.src = src;
+}
+
+function closeCert(){
+  document.getElementById('cert-lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(()=>{ document.getElementById('cert-lb-img').src=''; }, 350);
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeCert();
+});
+</script>
+</body>
+</html>
